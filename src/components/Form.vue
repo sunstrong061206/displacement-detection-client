@@ -10,7 +10,7 @@ export default {
   methods: {
     addCylinderGeometry() {
       console.log('点击事件')
-      this.$bus.$emit('drawCylinder', 0, 0, 800, 0, 0)
+      this.$bus.$emit('drawCylinder', 0, 0, 400, 0, 0)
     },
   },
 }
