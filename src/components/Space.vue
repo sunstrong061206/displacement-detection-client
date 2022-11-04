@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       axiesLength: 1000,
-      cylinderList: [[0, 0, 0, 0, 0]],
+      cylinderMeshList: [],
     }
   },
   methods: {
@@ -342,22 +342,39 @@ export default {
       this.renderer.render(this.scene, this.camera)
     },
     // (x,y,z)为圆柱体几何中心的坐标，方位角，旋转角
-    draw(x, y, z, rotate1, rotate2) {
-      let geometry = new THREE.CylinderGeometry(50, 50, 100, 40, 40)
-      geometry.rotateX(Math.PI / 2)
-      let material = new THREE.MeshLambertMaterial({
-        color: 0xff8066,
+    drawCylinderList(arr, index) {
+      this.cylinderMeshList.forEach((cylinderMesh) => {
+        this.scene.remove(cylinderMesh)
       })
-      let cylinder = new THREE.Mesh(geometry, material) //网格模型对象Mesh
-      cylinder.position.x = x
-      cylinder.position.y = y
-      cylinder.position.z = z
-      this.scene.add(cylinder) //网格模型添加到场景中
+      this.cylinderMeshList = []
+      arr.forEach(
+        ({
+          xPosition,
+          yPosition,
+          zPosition,
+          inclinationAngle,
+          azimuthAngle,
+        }) => {
+          let cylinder = new THREE.CylinderGeometry(50, 50, 100, 40, 40)
+          cylinder.rotateX(Math.PI / 2) // 先立起来
+          // TODO 如何旋转
+          // cylinder.rotateOnWorldAxis((0, 1, 0), Math.PI / 2)
+          let material = new THREE.MeshLambertMaterial({
+            color: 0xff8066,
+          })
+          let cylinderMesh = new THREE.Mesh(cylinder, material) //网格模型对象Mesh
+          cylinderMesh.position.x = xPosition
+          cylinderMesh.position.y = yPosition
+          cylinderMesh.position.z = zPosition
+          this.cylinderMeshList.push(cylinderMesh)
+          this.scene.add(cylinderMesh) //网格模型添加到场景中
+        }
+      )
     },
   },
   mounted() {
     this.threeInit()
-    this.$bus.$on('drawCylinder', this.draw)
+    this.$bus.$on('drawCylinderList', this.drawCylinderList)
   },
 }
 </script>

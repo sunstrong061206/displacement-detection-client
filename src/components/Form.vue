@@ -3,14 +3,16 @@
 </template>
 
 <script>
+import { FakeAPI } from '@/api/request.js'
 export default {
   data() {
     return {}
   },
   methods: {
     addCylinderGeometry() {
-      console.log('点击事件')
-      this.$bus.$emit('drawCylinder', 0, 0, 400, 0, 0)
+      FakeAPI().then((resp) => {
+        this.$bus.$emit('drawCylinderList', resp.data.value.result.data)
+      })
     },
   },
 }

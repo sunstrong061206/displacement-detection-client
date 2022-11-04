@@ -4,6 +4,14 @@ module.exports = defineConfig({
   devServer: {
     host: '127.0.0.1',
     port: 8080,
+    proxy: {
+      '/mock': {
+        target: 'https://uplink-monitor.swomat.com/shape/api/v1',
+        ws: true,
+        changeOrigin: true, // 允许跨域
+        pathRewrite: { '^/mock': '' },
+      },
+    },
   },
-  lintOnSave:false, //关闭eslint检查
+  lintOnSave: false, //关闭eslint检查
 })
