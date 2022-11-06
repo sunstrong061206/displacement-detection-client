@@ -1,10 +1,10 @@
 <template>
-  <div id="space" ref="space"></div>
+  <div class="domain" id="space" ref="space"></div>
 </template>
 
 <script>
 // 空间系
-// import * as THREE from 'three'
+
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader'
@@ -30,7 +30,7 @@ export default {
        */
       let space = this.$refs.space
       let k = space.offsetWidth / space.offsetHeight //窗口宽高比
-      let s = 800 //三维场景显示范围控制系数，系数越大，显示的范围越大
+      let s = 1200 //三维场景显示范围控制系数，系数越大，显示的范围越大
       //创建相机对象
       this.camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000)
       this.camera.position.set(-300, -300, 300) //设置相机位置
@@ -60,16 +60,16 @@ export default {
       /**
        * 创建控制器控件
        */
-      let controls = new OrbitControls(this.camera, this.renderer.domElement)
-      controls.enableZoom = false // 禁止缩放
-      controls.enablePan = false //禁止平移
-      // controls.enableRotate = false //禁止旋转
+      this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+      this.controls.enableZoom = false // 禁止缩放
+      this.controls.enablePan = false //禁止平移
+      // this.controls.enableRotate = false //禁止旋转
 
-      /*       controls.maxDistance = 1.5 // 最大缩放值
-      controls.minDistance = 1 // 最小缩放值 */
+      /*       this.controls.maxDistance = 1.5 // 最大缩放值
+      this.controls.minDistance = 1 // 最小缩放值 */
 
       // 给控制器添加事件，不要通过定时器来实现交互，可以极大的优化性能
-      controls.addEventListener('change', () => {
+      this.controls.addEventListener('change', () => {
         this.renderer.render(this.scene, this.camera)
       })
     },
@@ -296,8 +296,8 @@ export default {
       this.initController()
       this.initGrid()
 
-      // TODO 辅助测试
-      this.initAxes()
+      // TODO 辅助测试-修改
+      // this.initAxes()
 
       /**
        * 画线，明确坐标轴x,y,z
@@ -355,10 +355,10 @@ export default {
           inclinationAngle,
           azimuthAngle,
         }) => {
+          inclinationAngle = (inclinationAngle * Math.PI) / 180
+          azimuthAngle = (azimuthAngle / 180) * Math.PI
           let cylinder = new THREE.CylinderGeometry(50, 50, 100, 40, 40)
           cylinder.rotateX(Math.PI / 2) // 先立起来
-          // TODO 如何旋转
-          // cylinder.rotateOnWorldAxis((0, 1, 0), Math.PI / 2)
           let material = new THREE.MeshLambertMaterial({
             color: 0xff8066,
           })
@@ -366,25 +366,34 @@ export default {
           cylinderMesh.position.x = xPosition
           cylinderMesh.position.y = yPosition
           cylinderMesh.position.z = zPosition
+          cylinderMesh.rotateOnAxis(
+            new THREE.Vector3(
+              Math.cos(inclinationAngle),
+              Math.sin(inclinationAngle),
+              0
+            ),
+            azimuthAngle
+          )
           this.cylinderMeshList.push(cylinderMesh)
           this.scene.add(cylinderMesh) //网格模型添加到场景中
         }
       )
     },
+    resetCamera() {
+      this.controls.reset()
+    },
   },
   mounted() {
     this.threeInit()
     this.$bus.$on('drawCylinderList', this.drawCylinderList)
+    this.$bus.$on('resetCamera', this.resetCamera)
   },
 }
 </script>
 
 <style>
-#space {
+.domain {
   width: 100%;
-  height: 600px;
-  background-color: #eeeeee;
-  display: flex;
-  align-items: center;
+  height: 97%;
 }
 </style>
