@@ -1,78 +1,78 @@
 <template>
-  <div>
-    <button @click="reset">请求结果</button>
-    <button @click="reset">查询结果</button>
-    <button @click="reset">停止</button>
-    <button @click="addCylinderGeometry">查询状态</button>
-    <button @click="reset">复位</button>
+  <div class="wrap">
+    <div class="nav">
+      <div class="btn">
+        <div class="btn-item"></div>
+      </div>
+      <div class="icon">
+        <div class="icon-img">
+          <img src="@/assets/avatar.jpg" style="height: 450px" alt="icon-img" />
+        </div>
+        <div class="icon-con">
+          <h2>Admin</h2>
+        </div>
+      </div>
+      <div class="line"></div>
+      <div class="title">
+        <p>实时</p>
+      </div>
+      <div class="current">
+        <div class="item" @click="connect">
+          <div class="light"></div>
+          <div class="licon">
+            <span class="iconfont icon-connect"></span>
+          </div>
+          <div class="con">连接</div>
+          <div class="ricon"></div>
+        </div>
 
-    <div class="wrap">
-      <div class="nav">
-        <div class="btn">
-          <div
-            class="btn-item"
-            :style="{ backgroundColor: this.lightColor }"
-          ></div>
-        </div>
-        <div class="icon">
-          <div class="icon-img">
-            <img
-              src="@/assets/avatar.jpg"
-              style="height: 450px"
-              alt="icon-img"
-            />
+        <div class="item">
+          <div class="light"></div>
+          <div class="licon">
+            <span class="iconfont icon-xitongzhuangtai"></span>
           </div>
-          <div class="icon-con">
-            <h2>Admin</h2>
-          </div>
+          <div class="con">状态</div>
+          <div class="ricon"></div>
         </div>
-        <div class="line"></div>
-        <div class="title">
-          <p>实时</p>
-        </div>
-        <div class="current">
-          <div class="item">
-            <div class="light"></div>
-            <div class="licon">
-              <span class="iconfont icon-connect"></span>
-            </div>
-            <div class="con">连接</div>
-            <div class="ricon"></div>
-          </div>
 
-          <div class="item">
-            <div class="light"></div>
-            <div class="licon">
-              <span class="iconfont icon-xitongzhuangtai"></span>
-            </div>
-            <div class="con">状态</div>
-            <div class="ricon"></div>
+        <div class="item" @click="stop">
+          <div class="light"></div>
+          <div class="licon">
+            <span class="iconfont icon-jieshu"></span>
           </div>
+          <div class="con">停止</div>
+          <div class="ricon"></div>
+        </div>
+      </div>
+      <div class="line"></div>
+      <div class="title">
+        <p>查询</p>
+      </div>
+      <div class="serve">
+        <div class="item">
+          <div class="light"></div>
+          <div class="licon">
+            <span class="iconfont icon-querylist"></span>
+          </div>
+          <div class="con">查询</div>
+          <div class="ricon">
+            <span class="iconfont icon-24gl-calendar"></span>
+          </div>
+        </div>
+      </div>
 
-          <div class="item">
-            <div class="light"></div>
-            <div class="licon">
-              <span class="iconfont icon-jieshu"></span>
-            </div>
-            <div class="con">停止</div>
-            <div class="ricon"></div>
+      <div class="line"></div>
+      <div class="title">
+        <p>控制</p>
+      </div>
+      <div class="serve">
+        <div class="item" @click="reset">
+          <div class="light"></div>
+          <div class="licon">
+            <span class="iconfont icon-Reset-Settings"></span>
           </div>
-        </div>
-        <div class="line"></div>
-        <div class="title">
-          <p>查询</p>
-        </div>
-        <div class="serve">
-          <div class="item">
-            <div class="light"></div>
-            <div class="licon">
-              <span class="iconfont icon-querylist"></span>
-            </div>
-            <div class="con">查询</div>
-            <div class="ricon">
-              <span class="iconfont icon-24gl-calendar"></span>
-            </div>
-          </div>
+          <div class="con">复位</div>
+          <div class="ricon"></div>
         </div>
       </div>
     </div>
@@ -84,6 +84,7 @@
  * Dash Board 操作面板
  */
 import { FakeAPI } from '@/api/request.js'
+import addr from '../../config/addr.js'
 export default {
   data() {
     return {
@@ -91,7 +92,7 @@ export default {
       status: 0,
     }
   },
-  computed: {
+  /*   computed: {
     lightColor() {
       if (this.status === 0) {
         return '#eb5a56'
@@ -99,21 +100,89 @@ export default {
         return '#62cb44'
       } else return '#f8bc33'
     },
-  },
+  }, */
   methods: {
+    socketOnOpen() {
+      this.status = 1
+      this.addCylinderGeometry()
+      if (this.connectInstance) this.connectInstance.close()
+      this.connectInstance = this.$notify({
+        message: '连接建立成功',
+        type: 'success',
+        position: 'bottom-left',
+      })
+      document
+        .getElementsByTagName('body')[0]
+        .style.setProperty('--themeColor', '#62cb44')
+    },
+    socketOnMessage(mes) {
+      console.log(mes)
+    },
+    socketOnClose() {
+      if (this.status !== 0) {
+        if (this.tempInstance) this.tempInstance.close()
+        if (this.stopInstance) this.stopInstance.close()
+        this.stopInstance = this.$notify({
+          message: '连接断开成功',
+          type: 'success',
+          position: 'bottom-left',
+        })
+      }
+
+      this.status = 0
+      document
+        .getElementsByTagName('body')[0]
+        .style.setProperty('--themeColor', '#eb5a56')
+    },
+    connect() {
+      if (this.status === 1) {
+        if (this.connectInstance) this.connectInstance.close()
+        this.connectInstance = this.$notify({
+          message: '不可以重复连接',
+          type: 'warning',
+          position: 'bottom-left',
+        })
+        return
+      }
+      // 建立WebSocket连接
+      this.socket = new WebSocket(
+        `${addr.WEBSOCKET_ADDR}1e9789be-2749-4b50-aa8d-b1bba226a83f`
+      )
+      this.socket.onopen = this.socketOnOpen
+      this.socket.onclose = this.socketOnClose
+    },
+    stop() {
+      if (this.status !== 1) return
+      if (this.tempInstance) this.tempInstance.close()
+      this.tempInstance = this.$notify({
+        message: '连接正在断开...',
+        type: 'info',
+        position: 'bottom-left',
+      })
+      this.socket.close()
+    },
+    // 模拟数据
     addCylinderGeometry() {
       FakeAPI().then((resp) => {
-        this.$bus.$emit('drawCylinderList', resp.data.value.result.data)
+        console.log('resp', resp)
+        if (resp.data.type === 8) {
+          this.$bus.$emit('drawCylinderList', resp.data.value.result.data)
+          this.$bus.$emit('updateInfoTable', resp.data.value.result.data)
+        }
       })
     },
     reset() {
       this.$bus.$emit('resetCamera')
     },
   },
+  beforeDestroy() {
+    this.socket.close()
+  },
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$themeColor: var(--themeColor, #eb5a56);
 .wrap {
   width: 400px;
   display: flex;
@@ -126,7 +195,7 @@ export default {
 .nav {
   /* width:280px; */
   width: 110px;
-  height: 490px;
+  height: 615px;
   background: rgba(0, 0, 0, 0.8);
   overflow: hidden;
   border-radius: 20px;
@@ -150,7 +219,8 @@ export default {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  /* background-color: #eb5a56; */
+  // background-color: #eb5a56;
+  background: $themeColor;
 }
 
 .icon {
@@ -278,7 +348,8 @@ export default {
 .light {
   width: 6px;
   height: 50px;
-  background: #eb5a56;
+  background: $themeColor;
+  // background: #eb5a56;
   position: absolute;
   left: -25px;
   transition: 0.5s;

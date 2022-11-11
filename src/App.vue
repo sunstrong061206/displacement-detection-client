@@ -2,17 +2,20 @@
   <div id="app">
     <Space class="space" />
     <Act class="act" />
+    <InfoTable class="info-table" />
   </div>
 </template>
 
 <script>
 import Space from '@/components/Space.vue'
 import Act from '@/components/Act.vue'
+import InfoTable from '@/components/InfoTable.vue'
 export default {
   name: 'App',
   components: {
     Space,
     Act,
+    InfoTable,
   },
 }
 </script>
@@ -31,7 +34,12 @@ body {
 }
 .act {
   position: absolute;
-  top: 0;
+  top: 100px;
   left: 0;
+}
+.info-table {
+  position: absolute;
+  top: 100px;
+  right: 30px;
 }
 </style>

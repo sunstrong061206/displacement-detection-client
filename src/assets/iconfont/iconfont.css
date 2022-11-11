@@ -11,6 +11,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-Reset-Settings:before {
+  content: "\e93a";
+}
+
 .icon-24gl-calendar:before {
   content: "\eb3f";
 }

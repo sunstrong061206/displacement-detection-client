@@ -368,11 +368,11 @@ export default {
           cylinderMesh.position.z = zPosition
           cylinderMesh.rotateOnAxis(
             new THREE.Vector3(
-              Math.cos(inclinationAngle),
-              Math.sin(inclinationAngle),
+              Math.cos(azimuthAngle),
+              Math.sin(azimuthAngle),
               0
             ),
-            azimuthAngle
+            inclinationAngle
           )
           this.cylinderMeshList.push(cylinderMesh)
           this.scene.add(cylinderMesh) //网格模型添加到场景中

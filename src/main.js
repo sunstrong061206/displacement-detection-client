@@ -1,5 +1,14 @@
 import Vue from 'vue'
 import App from './App.vue'
+import { Notification } from 'element-ui'
+import { Table } from 'element-ui'
+import { TableColumn } from 'element-ui'
+
+import 'element-ui/lib/theme-chalk/index.css'
+
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.prototype.$notify = Notification
 
 import './assets/iconfont/iconfont.css'
 
