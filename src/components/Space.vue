@@ -239,7 +239,7 @@ export default {
         this.scene.add(yMinMesh)
 
         // z坐标刻度
-        let zMax = new TextGeometry(String(this.axiesLength / 2), {
+        let zMax = new TextGeometry(String(this.axiesLength), {
           font: font,
           size: 50,
           height: 10,

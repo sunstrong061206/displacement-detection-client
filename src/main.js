@@ -1,14 +1,13 @@
 import Vue from 'vue'
 import App from './App.vue'
-import { Notification } from 'element-ui'
-import { Table } from 'element-ui'
-import { TableColumn } from 'element-ui'
+import { Notification, Table, TableColumn, Message } from 'element-ui'
 
 import 'element-ui/lib/theme-chalk/index.css'
 
 Vue.use(Table)
 Vue.use(TableColumn)
 Vue.prototype.$notify = Notification
+Vue.prototype.$message = Message
 
 import './assets/iconfont/iconfont.css'
 

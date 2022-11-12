@@ -38,6 +38,6 @@ export default {
 
 <style scoped>
 .container {
-  width: 500px;
+  width: 450px;
 }
 </style>

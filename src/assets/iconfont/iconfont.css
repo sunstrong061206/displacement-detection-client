@@ -11,12 +11,24 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-Reset-Settings:before {
-  content: "\e93a";
+.icon-result:before {
+  content: "\e617";
 }
 
-.icon-24gl-calendar:before {
-  content: "\eb3f";
+.icon-daduan:before {
+  content: "\ede0";
+}
+
+.icon-qingkong:before {
+  content: "\e946";
+}
+
+.icon-fuwuqingqiu:before {
+  content: "\e68d";
+}
+
+.icon-Reset-Settings:before {
+  content: "\e93a";
 }
 
 .icon-xitongzhuangtai:before {

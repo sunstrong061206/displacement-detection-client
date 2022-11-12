@@ -34,12 +34,12 @@ body {
 }
 .act {
   position: absolute;
-  top: 100px;
+  top: 50px;
   left: 0;
 }
 .info-table {
   position: absolute;
-  top: 100px;
+  top: 80px;
   right: 30px;
 }
 </style>
