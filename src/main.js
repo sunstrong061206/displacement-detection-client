@@ -1,11 +1,20 @@
 import Vue from 'vue'
 import App from './App.vue'
-import { Notification, Table, TableColumn, Message } from 'element-ui'
+import {
+  Notification,
+  Table,
+  Select,
+  Option,
+  TableColumn,
+  Message,
+} from 'element-ui'
 
 import 'element-ui/lib/theme-chalk/index.css'
 
 Vue.use(Table)
 Vue.use(TableColumn)
+Vue.use(Select)
+Vue.use(Option)
 Vue.prototype.$notify = Notification
 Vue.prototype.$message = Message
 

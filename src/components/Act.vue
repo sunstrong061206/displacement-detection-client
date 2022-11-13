@@ -49,14 +49,33 @@
           <div class="ricon"></div>
         </div>
 
-        <div class="item" @click="requestResult">
+        <div class="item relative" @click="changeShow">
           <div class="light"></div>
           <div class="licon">
             <span class="iconfont icon-result"></span>
           </div>
           <div class="con">结果</div>
-          <div class="ricon">
-            <span class="iconfont icon-daduan" @click.stop="interrupt"></span>
+          <div class="ricon"></div>
+
+          <div class="child-container" :class="{ show: isShow }">
+            <div
+              class="item"
+              v-for="targetNodeID in targetNodes"
+              :key="targetNodeID"
+              @click.stop="requestResult(targetNodeID)"
+            >
+              <div class="light"></div>
+              <div class="licon">
+                <span class="iconfont icon-jiedianguanli"></span>
+              </div>
+              <div class="con">{{ targetNodeID.split(':')[0] }}</div>
+              <div class="ricon">
+                <span
+                  class="iconfont icon-daduan"
+                  @click.stop="interrupt"
+                ></span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -110,7 +129,9 @@ export default {
     return {
       // 0：断开，1：连接中，-1：查询状态
       status: 0,
+      targetNodes: null,
       targetNodeID: null,
+      isShow: false,
     }
   },
   methods: {
@@ -134,14 +155,14 @@ export default {
     socketOnMessage(mes) {
       let data = JSON.parse(mes.data)
       if (data.type === 8) {
-        this.targetNodeID = data.value.masters[1].split(':')[1]
+        this.targetNodes = data.value.masters
         if (data.value.result) {
           this.$bus.$emit('drawCylinderList', data.value.result.data)
           this.$bus.$emit('updateInfoTable', data.value.result.data)
         }
         this.$message.closeAll()
         this.$message({
-          message: '实时状态',
+          message: '实时状态，节点集群已更新',
           type: 'success',
           duration: 1000,
         })
@@ -245,7 +266,7 @@ export default {
       { trailing: false }
     ),
     requestResult: throttle(
-      function () {
+      function (targetNodeID) {
         if (this.status !== 1) {
           this.$message.closeAll()
           this.$message({
@@ -255,11 +276,20 @@ export default {
           })
           return
         }
+        if (!this.targetNodes) {
+          this.$message.closeAll()
+          this.$message({
+            message: '请先进行状态请求',
+            type: 'error',
+            duration: 1000,
+          })
+          return
+        }
         this.socket.send(
           JSON.stringify({
             type: 4,
             value: {
-              targetNodeID: this.targetNodeID,
+              targetNodeID: targetNodeID,
             },
           })
         )
@@ -329,6 +359,27 @@ export default {
       this.$bus.$emit('drawCylinderList', [])
       this.$bus.$emit('updateInfoTable', [])
     },
+    changeShow() {
+      if (this.status === 0) {
+        this.$message.closeAll()
+        this.$message({
+          message: '请先建立连接',
+          type: 'error',
+          duration: 1000,
+        })
+        return
+      }
+      if (!this.targetNodes) {
+        this.$message.closeAll()
+        this.$message({
+          message: '请先进行状态请求，获取集群信息',
+          type: 'error',
+          duration: 1000,
+        })
+        return
+      }
+      this.isShow = !this.isShow
+    },
   },
   beforeDestroy() {
     this.socket.close()
@@ -348,11 +399,11 @@ $themeColor: var(--themeColor, #eb5a56);
 }
 
 .nav {
-  /* width:280px; */
+  /* width: 280px; */
   width: 110px;
   height: 655px;
   background: rgba(0, 0, 0, 0.8);
-  overflow: hidden;
+  // overflow: hidden;
   border-radius: 20px;
   transition: 0.5s;
 }
@@ -448,6 +499,29 @@ $themeColor: var(--themeColor, #eb5a56);
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.relative {
+  position: relative;
+}
+
+.child-container {
+  width: 280px;
+  position: absolute;
+  left: 115%;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 6px;
+  transition: 0.5s;
+  opacity: 0;
+}
+
+.nav:hover .show,
+.show:hover {
+  opacity: 1;
+  transition: 0.5s;
+}
+
 .licon {
   width: 60px;
   height: 50px;
@@ -512,7 +586,7 @@ $themeColor: var(--themeColor, #eb5a56);
   border-bottom-right-radius: 4px;
   opacity: 0;
 }
-.item:hover .light {
+.item:hover > .light {
   opacity: 1;
 }
 

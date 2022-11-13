@@ -11,6 +11,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-jiedianguanli:before {
+  content: "\eb64";
+}
+
 .icon-result:before {
   content: "\e617";
 }
